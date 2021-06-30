@@ -3,7 +3,55 @@
 # will be affected by a variable called "vegHt" (vegetation height) and detection will be affected
 # by a variabled called "wind" (wind speed).
 
-#### SIMULATING ABUNDANCE ####  
+#### Mallard Data Intro ####
+
+library(unmarked)
+data(mallard)
+
+#look at the data
+str(mallard.y)
+head(mallard.y)
+
+str(mallard.obs) #ivel is a measure of effort
+str(mallard.site) #length is transect length
+
+#create a special data structure required for unmarked
+umf.mall = unmarkedFramePCount(y=mallard.y, 
+                             siteCovs=mallard.site,
+                             obsCovs = mallard.obs)
+
+head(umf.mall)
+
+#can now run some basic models to look at detection and 
+# abundance in relation to covariates
+
+# When writing formula, detection covariates follow 
+# first tilde, then come abundance covariates
+
+#Note that we're using the pcount function for an N-mixture model
+mall.nmix1 <- pcount(~ivel ~elev, data=umf.mall) 
+
+#K is the maximum number of individuals you would expect
+# to see at a site. You typically don't need to set this
+# parameter, but it doesn't hurt. Larger values of K 
+# will mean longer computational time.
+#mall.nmix1 <- pcount(~ivel ~elev, data=umf.mall, K=104) 
+
+summary(mall.nmix1)
+# things to look for: big or small SE values (+10 or ~0),
+# sites removed, values of betas
+
+mall.full <- pcount(~ivel + date ~elev+length+forest,
+                    data=umf.mall, K=104)
+
+summary(mall.full)
+
+#The null model is the model with only intercepts, no
+# covariates
+mall.null <- pcount(~1 ~1, data=umf.mall, K=104)
+summary(mall.null)
+
+#### Simulating N-Mixture Data ####  
 
 # We start by simulating the number of sites we need
 nSites <- 100
@@ -69,9 +117,6 @@ for(i in 1:nSites) {
 
 # Look at the data
 cbind(N=N, y1=y[,1], y2=y[,2], y3=y[,3] ,p1=p[,1], p2=p[,2],p3=p[,3])
-
-# Load library, format data and summarize
-library(unmarked)
 
 #Create data structure unique to unmarked package. Inputs data (y) and site covariates (siteCovs)
 umf <- unmarkedFramePCount(y=y, siteCovs=as.data.frame(vegHt), 
