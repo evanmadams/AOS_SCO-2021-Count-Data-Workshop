@@ -12,7 +12,7 @@ nobo.umf <- unmarkedFramePCount(y=nobo[,2:4],
                                              time=scale(nobo[,17:19])))
 summary(nobo.umf)
 
-#same N-mix function from unmarked
+#N-mix function from unmarked
 nobo.1 <- pcount(~sky + jdate + time ~BA + Evergreen5km, 
                  data=nobo.umf,K=105) 
 summary(nobo.1)
@@ -69,6 +69,8 @@ umf.mall = unmarkedFramePCount(y=mallard.y,
                         siteCovs=mallard.site,
                         obsCovs = mallard.obs)
 
+#Notice that we're not specifying the mixture type (Poisson, NB) here
+# Currently, the only option in ubms is for Poisson
 ubms.null = stan_pcount(~1 ~1, data=umf.mall, 
                         chains=3, iter=300)
 
