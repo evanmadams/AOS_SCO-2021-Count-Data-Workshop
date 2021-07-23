@@ -70,7 +70,10 @@ umf.mall = unmarkedFramePCount(y=mallard.y,
                         obsCovs = mallard.obs)
 
 #Notice that we're not specifying the mixture type (Poisson, NB) here
-# Currently, the only option in ubms is for Poisson
+# Currently, the only option in ubms is for Poisson. But! We can
+# account for a lot of overdispersion or extra variation with 
+# random effects, so this is typically not a problem.
+
 ubms.null = stan_pcount(~1 ~1, data=umf.mall, 
                         chains=3, iter=300)
 
