@@ -5,7 +5,7 @@ library(unmarked)
 
 #We'll start by reading in the same data from the N-mix Intro.
 
-nobo <- read.csv("nobo_abund.csv")
+nobo <- read.csv('data/nobo_abund.csv')
 nobo.umf <- unmarkedFramePCount(y=nobo[,2:4], 
                                 siteCovs=as.data.frame(scale(nobo[,5:10])), 
                                 obsCovs=list(sky=scale(nobo[,11:13]),jdate=scale(nobo[,14:16]),
@@ -41,7 +41,7 @@ cbind(unmarked=coef(nobo.1), stan=coef(nobo.ubms))
 # sampled each year, we need to account for this pseudo-
 # replication with a random effect of site.
 
-nobo.full.dat <- read.csv("nobo_abund_full.csv")
+nobo.full.dat <- read.csv("data/nobo_abund_full.csv")
 
 #data frame is similar but with site covariate
 nobo.full.umf <- unmarkedFramePCount(y=nobo[,2:4], 
@@ -57,6 +57,15 @@ summary(nobo.full.umf)
 # if we thought it was warranted for a given variable.
 nobo.ubms.rand = stan_pcount(~sky ~BA + (1|site), 
                         data=nobo.full.umf, chains=3, iter=300)
+
+#We've been using ubms but a few models (occu or pcount) in 
+# unmarked support random effects now too (v. 1.1.1)
+
+nobo.unmark.rand <- pcount(~sky ~BA + (1|site), data=nobo.full.umf)
+
+nobo.ubms.rand
+summary(nobo.unmark.rand)
+sigma(nobo.unmark.rand) #extracts estimate of random effect
 
 #This is another example this time with mallard data
 # that is included in the unmarked package.
@@ -95,7 +104,7 @@ round(modSel(mods),3)
 #ubms has several models from unmarked (but not all). We
 # can also run distance sampling models with random effects.
 
-dat <- dget('mebba_spp_Chipping Sparrow.dat')
+dat <- dget('data/mebba_spp_Chipping Sparrow.dat')
 y <- data.frame(site = 1:dat$nsites)
 ds <- data.frame(site = dat$site.idx, dc = dat$distclass)
 ds <- dcast(ds, site ~ dc, fun.aggregate = length)

@@ -1,7 +1,8 @@
 
-# We'll start by simulating the data for a basic N-mixture model. In our simulation, abundance
-# will be affected by a variable called "vegHt" (vegetation height) and detection will be affected
-# by a variabled called "wind" (wind speed).
+# We'll start by bringing in data for a basic N-mixture 
+# model. This data comes with the unmarked package. 
+# We'll then simulate some data and end with bringing in
+# data from a .csv file.
 
 #### Mallard Data Intro ####
 
@@ -184,7 +185,7 @@ sum(N) #original simulated abundance
 sum(bup(site.N)) #total estimated abundance
 
 # Analyze with real data
-nobo <- read.csv("nobo_abund.csv")
+nobo <- read.csv("data/nobo_abund.csv")
 head(nobo)
 
 # Create unmarked dataframe

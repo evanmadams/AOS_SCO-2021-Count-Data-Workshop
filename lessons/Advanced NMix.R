@@ -1,5 +1,8 @@
 # More advanced tools for N-mixture models
 
+## Need to run Nmix Intro.R for complete code to run! ##
+
+
 #### DISTRIBUTIONS FOR ABUNDANCE ####
 # Can use zero-inflated Poisson (ZIP) or negative binomial (NB) as well
 
