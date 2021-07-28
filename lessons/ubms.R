@@ -2,6 +2,8 @@
 #install.packages("ubms")
 library(ubms)
 library(unmarked)
+library(dplyr)
+library(reshape2)
 
 #We'll start by reading in the same data from the N-mix Intro.
 
@@ -123,14 +125,14 @@ umf.ubms <- unmarkedFrameDS(y = as.matrix(y[1:100 ,2:6]),
 head(umf.ubms)
 
 #from DistSampling_Intro.R
-#fm <- distsamp(~Wind.Speed.Code + Background.Noise.Code + ydate ~eff.domhabA, data = umf.ubms, keyfun = 'halfnorm', output = 'density', unitsOut = 'ha')
+fm <- distsamp(~Wind.Speed.Code + Background.Noise.Code + ydate ~eff.domhabA, data = umf.ubms, keyfun = 'halfnorm', output = 'density', unitsOut = 'ha')
 
 ubms.dist <- stan_distsamp(~Wind.Speed.Code + Background.Noise.Code + ydate ~eff.domhabA, 
                 data=umf.ubms,
                 keyfun = 'halfnorm',
                 output = 'density',
                 unitsOut = 'ha',
-                chains = 3, iter = 300)
+                chains = 3, iter = 1000)
 
 cbind(unmarked=coef(fm), stan=coef(ubms.dist))
 
@@ -143,7 +145,7 @@ dist.rand <- stan_distsamp(~Wind.Speed.Code + Background.Noise.Code + ydate ~eff
                 keyfun = 'halfnorm',
                 output = 'density',
                 unitsOut = 'ha',
-                chains = 3, iter = 300)
+                chains = 3, iter = 1000)
 
 dist.rand
 
