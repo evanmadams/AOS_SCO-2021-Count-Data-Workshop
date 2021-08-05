@@ -76,7 +76,7 @@ plot(predictorEffects(fm2))
 
 
 ####Zero-inflation models
-#we can't use pscl, so we'll be using another package could glmmTMB
+#we can't use pscl, so we'll be using another package called glmmTMB
 #the code looks a bit different
 #note that we can fit a model for both the count component and the bernoulli component of the ZIP
 
@@ -108,58 +108,61 @@ if (requireNamespace("broom.mixed") && requireNamespace("dotwhisker")) {
 
 #a more complex model where we add covariate to the ZI part of the model
 
-fm3 <- glmmTMB(Number.of.Tick.Collected ~ (1|Date) + Band.Code + Year,
+fm4 <- glmmTMB(Number.of.Tick.Collected ~ (1|Date) + Band.Code + Year,
                zi = ~ Band.Code + Year,
                data =dat,
                family = poisson)
 
-summary(fm3)
-fm3_simres <- simulateResiduals(fm3)
-plot(fm3_simres)
-car::Anova(fm3)
-plot(allEffects(fm3))
+summary(fm4)
+fm4_simres <- simulateResiduals(fm4)
+plot(fm4_simres)
+car::Anova(fm4)
+plot(allEffects(fm4))
 
 #in this case, the additional covariates don't seem that helpful
 
 #note that this is just the glmer model above but in glmmTMB format
-fm3 <- glmmTMB(Number.of.Tick.Collected ~ (1|Date) + Band.Code + Year,
+fm5 <- glmmTMB(Number.of.Tick.Collected ~ (1|Date) + Band.Code + Year,
                zi = ~ 0,
                data =dat,
                family = poisson)
 
-summary(fm3)
-fm3_simres <- simulateResiduals(fm3)
-plot(fm3_simres)
-car::Anova(fm3)
-plot(allEffects(fm3))
+summary(fm5)
+fm5_simres <- simulateResiduals(fm5)
+plot(fm5_simres)
+car::Anova(fm5)
+plot(allEffects(fm5))
 
 #NB and ZINB with a random effect
 
-fm3 <- glmmTMB(Number.of.Tick.Collected ~ (1|Date) + Band.Code + Year,
+fm6 <- glmmTMB(Number.of.Tick.Collected ~ (1|Date) + Band.Code + Year,
                zi = ~ 0,
                data =dat,
                family = nbinom2)
 
-summary(fm3)
-fm3_simres <- simulateResiduals(fm3)
-plot(fm3_simres)
-car::Anova(fm3)
-plot(allEffects(fm3))
+summary(fm6)
+fm6_simres <- simulateResiduals(fm6)
+plot(fm6_simres)
+car::Anova(fm6)
+plot(allEffects(fm6))
 
-fm3 <- glmmTMB(Number.of.Tick.Collected ~ (1|Date) + Band.Code + Year,
+fm7 <- glmmTMB(Number.of.Tick.Collected ~ (1|Date) + Band.Code + Year,
                zi = ~ 1,
                data =dat,
                family = nbinom2)
 
-summary(fm3)
-fm3_simres <- simulateResiduals(fm3)
-plot(fm3_simres)
-car::Anova(fm3)
-plot(allEffects(fm3))
+summary(fm7)
+fm7_simres <- simulateResiduals(fm7)
+plot(fm7_simres)
+car::Anova(fm7)
+plot(allEffects(fm7))
+
+AIC(fm3, fm4, fm5, fm6, fm7)
 
 
 #in summary, count data are hard to fit and random effects can provide a powerful way to account for complex issues
-#it looks like ZIP or an NB is best for these data
+#it looks like NB is best for these data
+#note that we are still getting bad fit from the ZINB. This is a problem with these kinds of models, sometimes it's hard to parse all these zeros
 
 #Challenge
 #explore other GLMMs with the tick data set

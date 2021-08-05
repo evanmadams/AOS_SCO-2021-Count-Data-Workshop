@@ -53,15 +53,15 @@ y1 <- rpois(length(x), exp(mu + b1*x1))
 
 hist(y)
 
-plot(x, y)
-abline(lm(y ~ x1))
+plot(x1, y1)
+abline(lm(y1 ~ x1))
 
 
 
 ####ZIP simulated GLM example##########
 
 mu <- 0.5
-psi <- 0.5
+psi <- 0.9
 b1 <- 0.5
 
 x2 <- rnorm(200, 0, 1)
@@ -70,8 +70,8 @@ y2 <- rzipois(length(x), exp(mu + b1*x2), psi)
 
 hist(y2)
 
-plot(x, y)
-abline(lm(y ~ x2))
+plot(x2, y2)
+abline(lm(y2 ~ x2))
 
 
 #compare the two simulated data sets
@@ -87,25 +87,29 @@ sim <- data.frame(pois = y1, zip = y2, x1 = x1, x2 = x2)
 
 fm.p <- glm(pois ~ x1, data = sim, family = 'poisson')
 plot(fm.p)
+plot(sqrt(residuals(fm.p)) ~ fitted(fm.p))
 pR2(fm.p)
 summary(fm.p)
 
 fm.zip <- zeroinfl(zip ~ x2|1, data = sim, dist = 'poisson')
+plot(residuals(fm.zip) ~ fitted(fm.zip))
 pR2(fm.zip)
 summary(fm.zip)
 
 #note that you can use your poisson simulation with the zip model
 
 fm.zip2 <- zeroinfl(pois ~ x1|1, data = sim, dist = 'poisson')
+plot(residuals(fm.zip2) ~ fitted(fm.zip2))
 pR2(fm.zip2)
 summary(fm.zip2)
 
-#it just doesn't find any evidence of zero-inflation
+#it just doesn't find evidence of zero-inflation
 
 #but if you do the opposite, things don't go as well
 
 fm.p2 <- glm(zip ~ x2, data = sim, family = 'poisson')
 plot(fm.p2)
+plot(sqrt(residuals(fm.p2)) ~ fitted(fm.p2))
 pR2(fm.p2)
 summary(fm.p2)
 
@@ -155,7 +159,7 @@ pR2(fm)
 
 plot(predictorEffects(fm))
 
-#so we had a small difference between years and more ticks on new birds than recaps. Cool.
+#so we had a small difference between years and more ticks on new birds than recaps. Cool.The month plot indicates poor model estimates.
 
 
 #so while we saw significant results with this model we also saw fairly poor model fit, particularly underestimating high values
@@ -183,7 +187,7 @@ summary(fm.zip)
 pR2(fm.zip)
 
 #note that we now have two different models, one that describes the poisson data and the other that describes the zero-inflation data
-#the model seems to estimate the zero-finlation parameter well and it's significantly different than zero, but does that mean it mattered?
+#the model seems to estimate the zero-inflation parameter well and it's significantly different than zero, but does that mean it mattered?
 
 #we can plot the fitted/residuals plot to see if there is any evidence of correlation and thus lack of fit
 plot(residuals(fm.zip) ~ fitted(fm.zip))
@@ -215,7 +219,7 @@ ggplot(rdat, aes(x = y)) + geom_bar() + theme_bw()
 
 #last example: ZINB
 
-fm.zinb <- zeroinfl(Number.of.Tick.Collected ~ Band.Code + Month + Year | 1, data = dat, dist = 'negbin')
+fm.zinb <- zeroinfl(Number.of.Tick.Collected ~ Band.Code + Year | 1, data = dat, dist = 'negbin')
 summary(fm.zinb)
 plot(residuals(fm.zinb) ~ fitted(fm.zinb))
 pR2(fm.zinb)
@@ -226,5 +230,5 @@ ggplot(dat, aes(x = Number.of.Tick.Collected)) + geom_bar() + theme_bw()
 rdat <- data.frame(y = rzinb(nrow(dat), lambda = exp(-1.381), k = 0.0474, omega = plogis(-13.72)))
 ggplot(rdat, aes(x = y)) + geom_bar() + theme_bw()
 
-#getting close, but these data are difficult to analyze!
-#note that our fitted vs. residuals plots are improving a bit, perhaps we can start thinking about believing our results
+#getting close, but these data are difficult to analyze! Note that we aren't estimating the ZI parameter well.
+#note that our fitted vs. residuals plots are improving a bit, we could start believe our results more if the ZI parameter was fitting better
