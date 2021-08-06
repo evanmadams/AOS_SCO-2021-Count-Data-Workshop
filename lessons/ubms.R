@@ -30,7 +30,7 @@ summary(nobo.1)
 options(mc.cores=3)
 
 nobo.ubms = stan_pcount(~sky + jdate + time ~BA + Evergreen5km, 
-                data=nobo.umf, K=105, chains=3, iter=300)
+                data=nobo.umf, K=105, chains=3, iter=100)
 
 #Compare unmarked and Stan output. Results should be
 # quite similar.
@@ -46,10 +46,10 @@ cbind(unmarked=coef(nobo.1), stan=coef(nobo.ubms))
 nobo.full.dat <- read.csv("data/nobo_abund_full.csv")
 
 #data frame is similar but with site covariate
-nobo.full.umf <- unmarkedFramePCount(y=nobo[,2:4], 
-                  siteCovs=cbind(as.data.frame(scale(nobo[,5:10])),site=nobo[,1]), 
-                  obsCovs=list(sky=scale(nobo[,11:13]),jdate=scale(nobo[,14:16]),
-                           time=scale(nobo[,17:19])))
+nobo.full.umf <- unmarkedFramePCount(y=nobo.full.dat[,2:4], 
+                  siteCovs=cbind(as.data.frame(scale(nobo.full.dat[,6:11])),site=nobo.full.dat[,1]), 
+                  obsCovs=list(sky=scale(nobo.full.dat[,12:14]),
+                           time=scale(nobo.full.dat[,15:17])))
 summary(nobo.full.umf)
 
 
@@ -58,7 +58,7 @@ summary(nobo.full.umf)
 # could implement a random effect for detection probability
 # if we thought it was warranted for a given variable.
 nobo.ubms.rand = stan_pcount(~sky ~BA + (1|site), 
-                        data=nobo.full.umf, chains=3, iter=300)
+                        data=nobo.full.umf, chains=3, iter=100)
 
 #We've been using ubms but a few models (occu or pcount) in 
 # unmarked support random effects now too (v. 1.1.1)
